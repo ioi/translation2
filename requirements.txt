@@ -17,3 +17,4 @@ openpyxl
 pdfkit==0.6.1
 xvfbwrapper==0.2.9
 raven
+tablib==0.14.0
