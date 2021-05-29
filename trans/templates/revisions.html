@@ -3,7 +3,7 @@
 {% load list_filter %}
 {% load timezone_filter %}
 
-{% block title %} {{ task_name | capfirst}} : History {% endblock %}
+{% block title %} {{ task_name }} : History {% endblock %}
 
 {% block content %}
 
@@ -21,7 +21,7 @@
                     <table class="table table-version table-hover">
                         <thead><tr>
                             <td colspan="4">
-                                {{ task_name | capfirst }} 
+                                {{ task_name }} 
                                 {% if task_type == 'released'%} (ISC) {% endif %}
                             </td>
                         </tr></thead>

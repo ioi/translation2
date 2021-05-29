@@ -38,7 +38,7 @@
                 <tbody>
                 {% for task in contest.tasks %}
                     <tr>
-                        <td> {{ task.name | capfirst }} </td>
+                        <td> {{ task.name }} </td>
                         <td>
                             {% if task.is_editing %} Is editing
                             {% elif task.frozen %} Frozen
