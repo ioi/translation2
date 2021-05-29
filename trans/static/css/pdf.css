@@ -25,7 +25,7 @@ div.pdf {
 }
 
 .header {
-    font-family: IRANSans, Helvetica, Arial, sans-serif;
+    font-family: Arial, sans-serif;
     font-size: 14px;
     letter-spacing: -.04em;
     font-weight: 400;
@@ -38,7 +38,7 @@ div.pdf {
 }
 
 .header .title div:first-child {
-    font-weight: 500;
+    font-weight: bold;
     font-size: 1.1em;
     letter-spacing: -.03em;
     margin: 0px 0px 3px;
