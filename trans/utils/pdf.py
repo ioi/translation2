@@ -1,3 +1,4 @@
+import asyncio
 import os
 from urllib.parse import urljoin
 from uuid import uuid4
@@ -8,9 +9,8 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 
-import pdfkit
 from shutil import copyfile
-from xvfbwrapper import Xvfb
+from pyppeteer import launch
 
 from trans.context_processors import ioi_settings
 
@@ -78,7 +78,8 @@ def build_pdf(translation, task_type):
         images_path=settings.MEDIA_ROOT + 'images/',
         pdf_output=True,
     )
-    convert_html_to_pdf(html, pdf_file_path)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(convert_html_to_pdf(html, pdf_file_path))
     add_page_numbers_to_pdf(pdf_file_path, task.name)
     return pdf_file_path
 
@@ -100,13 +101,19 @@ def pdf_response(pdf_file_path, file_name):
         return response
 
 
-def convert_html_to_pdf(html, pdf_file_path):
+async def convert_html_to_pdf(html, pdf_file_path):
     try:
         html_file_path = '/tmp/{}.html'.format(str(uuid4()))
         with open(html_file_path, 'wb') as f:
             f.write(html.encode('utf-8'))
-        with Xvfb():
-            pdfkit.from_file(html_file_path, pdf_file_path, options=settings.WKHTMLTOPDF_CMD_OPTIONS)
+        browser = await launch(options={'args': ['--no-sandbox']})
+        page = await browser.newPage()
+        await page.goto('file://{}'.format(html_file_path), {
+            'waitUntil': 'networkidle2',
+        })
+        await page.emulateMedia('print')
+        await page.pdf({'path': pdf_file_path, **settings.PYPPETEER_PDF_OPTIONS})
+        await browser.close()
         os.remove(html_file_path)
     except Exception as e:
         logger.error(e)

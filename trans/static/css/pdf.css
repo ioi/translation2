@@ -1,7 +1,6 @@
 
 body {
     margin: 3em 5em;
-    zoom: .9;
     text-align: justify;
     background-color: rgb(82, 86, 89);
 }
@@ -84,7 +83,7 @@ div.pdf {
 
 .pdf.markdown-body {
     color: black;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .pdf.markdown-body code {
@@ -99,7 +98,6 @@ div.pdf {
 @media print {
 
     body {
-        zoom: 1.2;
         margin: 0;
         background-color: white;
     }

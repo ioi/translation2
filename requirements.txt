@@ -14,6 +14,5 @@ ipython
 pytz
 django-websocket-redis
 openpyxl
-pdfkit==0.6.1
-xvfbwrapper==0.2.9
+pyppeteer~=0.2.5
 raven
