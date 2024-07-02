@@ -129,7 +129,7 @@ class _PrintJobPickUpView(View):
             return HttpResponseBadRequest(
                 'Could not pick up job. Check log for more details.')
 
-        http_referer = request.META.get('HTTP_REFERER')
+        http_referer = request.headers.get('referer')
         if http_referer:
             return redirect(http_referer)
         return HttpResponse('Ok!')
@@ -162,7 +162,7 @@ class _PrintJobMarkCompletionView(View):
             return HttpResponseBadRequest(
                 'Could not mark job as complete. Check log for more details.')
 
-        http_referer = request.META.get('HTTP_REFERER')
+        http_referer = request.headers.get('referer')
         if http_referer:
             return redirect(http_referer)
         return HttpResponse('Ok!')

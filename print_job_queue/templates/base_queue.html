@@ -48,16 +48,13 @@
         table#in-progress-tbl tbody td:nth-child(2) {
             text-align: center;
         }
-        /* Action */
-        /* The guard isn't actually necessary. Added for clarity. */
-        {% if worker_name %}
+        /* Action or worker handling the request */
         table#in-progress-tbl thead th:nth-child(4) {
             width: 150px;
         }
         table#in-progress-tbl tbody td:nth-child(4) {
             text-align: center;
         }
-        {% endif %}
   
         table#pending-tbl {
             width: {% if worker_name %}300px{% else %}150px{% endif %};
@@ -153,4 +150,3 @@
     
     </body>
 </html>
-    

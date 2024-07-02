@@ -37,8 +37,6 @@ At this point, the app will be running at `http://localhost:9000/`. You may opti
 * You can get access to the system logs by running `docker-compose logs`. To follow the logs from now on, run `docker-compose logs -f --tail=0`.
 * To stop the app, run `docker-compose stop`.
 
-To use docker in development settings, add `--reload` option to the execution line of gunicorn in `docker-entrypoint.sh` file. Then run docker by `docker-compose up --build`.
-
 License
 -------
 This software is distributed under the MIT license,

@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='translation',
             name='translating',
-            field=models.NullBooleanField(),
+            field=models.BooleanField(null=True),
         ),
     ]

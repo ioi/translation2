@@ -457,10 +457,11 @@ var inline = {
   nolink: /^!?\[((?:\[[^\]]*\]|[^\[\]])*)\]/,
   strong: /^__([\s\S]+?)__(?!_)|^\*\*([\s\S]+?)\*\*(?!\*)/,
   em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,
+  tex: /^(\${1,2})(?:(?!\1)[\s\S])*\1/,
   code: /^(`+)\s*([\s\S]*?[^`])\s*\1(?!`)/,
   br: /^ {2,}\n(?!\s*$)/,
   del: noop,
-  text: /^[\s\S]+?(?=[\\<!\[_*`]| {2,}\n|$)/
+  text: /^[\s\S]+?(?=[\$\\<!\[_*`]| {2,}\n|$)/
 };
 
 inline._inside = /(?:\[[^\]]*\]|[^\[\]]|\](?=[^\[]*\]))*/;
@@ -658,6 +659,13 @@ InlineLexer.prototype.output = function(src) {
       continue;
     }
 
+    // tex
+    if (cap = this.rules.tex.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.tex(cap[0], cap[1]);
+      continue;
+    }
+
     // code
     if (cap = this.rules.code.exec(src)) {
       src = src.substring(cap[0].length);
@@ -852,6 +860,10 @@ Renderer.prototype.strong = function(text) {
 
 Renderer.prototype.em = function(text) {
   return '<em>' + text + '</em>';
+};
+
+Renderer.prototype.tex = function(text, type) {
+  return text;
 };
 
 Renderer.prototype.codespan = function(text) {

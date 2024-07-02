@@ -4,7 +4,7 @@ from django.http.response import HttpResponseRedirect, HttpResponseBadRequest, J
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render
 from trans.forms import UploadFileForm
 
@@ -19,7 +19,7 @@ class FirstPage(View):
         if request.user.groups.filter(name="staff").exists():
             return redirect(to=reverse('users_list'))
 
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return redirect(to=reverse('home'))
         else:
             return render(request, 'login.html')

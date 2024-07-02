@@ -60,7 +60,6 @@
             <tr>
                 <th>Task</th>
                 <th>Status</th>
-                <th>Unleash Lock</th>
                 {% if user_name == "ISC" %}
                 <th>ISC Version</th>
                 {% else %}
@@ -79,14 +78,6 @@
                     {% elif task.frozen %} Finalized
                     {% elif task.trans_id == None %} Not started
                     {% else %} Started {% endif %}
-                </td>
-                <td>
-                    {% if task.is_editing %}
-                        <form method="post" action="{% url 'unleash_edit_token' id=task.trans_id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-info"> Unleash </button>
-                        </form>
-                    {% endif %}
                 </td>
                 {% if user_name == "ISC" %}
                 <td>

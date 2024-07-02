@@ -13,7 +13,7 @@ class ReadNotifications(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         all_notifications = Notification.objects.all().order_by('-create_time')
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse(dict(notifications=get_all_notifs(request.user, all_notifications)))
         else:
             return render(request, 'notifications.html',

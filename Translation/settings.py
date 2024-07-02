@@ -24,10 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
-USE_X_FORWARDED_HOST = True
+DEBUG = int(os.environ.get('TRANS_DEBUG', '0')) > 0
 
 PYPPETEER_PDF_OPTIONS = {
     'margin': {
@@ -60,6 +57,7 @@ WEBSOCKET_URL = '/ws3/'
 WSGI_APPLICATION = 'ws4redis.django_runserver.application'
 
 MIDDLEWARE = [
+    'xff.middleware.XForwardedForMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -98,7 +96,7 @@ WSGI_APPLICATION = 'Translation.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ['DB_NAME'],
         'USER': os.environ['DB_USER'],
         'PASSWORD': os.environ['DB_PASSWORD'],
@@ -110,7 +108,7 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://%s:6379/%s" % (os.environ['REDIS_HOST'], os.environ['REDIS_DB']),
+        "LOCATION": "redis://%s:%s/%s" % (os.environ['REDIS_HOST'], os.environ.get('REDIS_PORT', '6379'), os.environ['REDIS_DB']),
         'TIMEOUT': None,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
@@ -200,8 +198,7 @@ LOGGING = {
 
 LANGUAGE_CODE = 'en-us'
 
-# TODO: change this to your time zone
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.environ.get('TRANS_TIME_ZONE', 'UTC')
 
 USE_I18N = True
 USE_L10N = True
@@ -213,4 +210,9 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
-HOST_URL = 'http://127.0.0.1:9000/'
+
+HOST_URL = os.environ.get('TRANS_URL', 'http://127.0.0.1:9000/')
+
+ALLOWED_HOSTS = ['*']
+USE_X_FORWARDED_HOST = True
+CSRF_TRUSTED_ORIGINS = [HOST_URL + '*']

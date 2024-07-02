@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 import datetime
 from django.db import migrations, models
-from django.utils.timezone import utc
+from datetime import timezone
 
 
 class Migration(migrations.Migration):
@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='contentversion',
             name='create_time',
-            field=models.DateTimeField(default=datetime.datetime(2017, 5, 26, 20, 27, 8, 93174, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(2017, 5, 26, 20, 27, 8, 93174, tzinfo=timezone.utc)),
         ),
         migrations.AlterField(
             model_name='task',
@@ -51,6 +51,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='versionparticle',
             name='create_time',
-            field=models.DateTimeField(default=datetime.datetime(2017, 5, 26, 20, 27, 8, 96649, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(2017, 5, 26, 20, 27, 8, 96649, tzinfo=timezone.utc)),
         ),
     ]

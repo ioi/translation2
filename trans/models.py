@@ -68,7 +68,7 @@ class Contest(models.Model):
 
 class Task(models.Model):
     name = models.CharField(db_index=True, max_length=255, blank=False)
-    contest = models.ForeignKey('Contest', default=None)
+    contest = models.ForeignKey('Contest', on_delete=models.CASCADE, default=None)
     order = models.IntegerField(default=1)
 
     def get_base_translation(self):
@@ -117,10 +117,10 @@ def final_pdf_path(instance, _):
 
 
 class Translation(models.Model):
-    user = models.ForeignKey('User')
-    task = models.ForeignKey('Task', default=0)
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    task = models.ForeignKey('Task', on_delete=models.CASCADE, default=0)
     frozen = models.BooleanField(default=False)
-    translating = models.NullBooleanField()
+    translating = models.BooleanField(null=True)
     final_pdf = models.FileField(upload_to=final_pdf_path, null=True)
 
     class Meta:
@@ -173,8 +173,8 @@ class Translation(models.Model):
 
 
 class UserContest(models.Model):
-    user = models.ForeignKey('User')
-    contest = models.ForeignKey('Contest', default=None)
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    contest = models.ForeignKey('Contest', on_delete=models.CASCADE, default=None)
     frozen = models.BooleanField(default=False)
     sealed = models.BooleanField(default=False)
     note = models.TextField(default='')
@@ -191,7 +191,7 @@ class UserContest(models.Model):
 
 
 class Version(models.Model):
-    translation = models.ForeignKey('Translation')
+    translation = models.ForeignKey('Translation', on_delete=models.CASCADE)
     text = models.TextField(default=None)
     saved = models.BooleanField(default=False)
     released = models.BooleanField(default=False)

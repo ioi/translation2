@@ -106,3 +106,9 @@ TAGS
 
 # Emacs config files
 *.el
+
+# Generated static files
+static
+
+# Vim swap files
+.*.swp

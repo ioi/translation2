@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 
-cd /usr/src/app
+. /opt/translate/venv/bin/activate
+cd /opt/translate/app
+
 export DJANGO_SETTINGS_MODULE=Translation.settings
 export LANG=C.UTF-8
 
-export DEBIAN_FRONTEND=noninteractive
-apt-get install -y tzdata
+ln -fs /usr/share/zoneinfo/${TRANS_TIME_ZONE:-UTC} /etc/localtime
 
-# TODO: change this to your time zone
-ln -fs /usr/share/zoneinfo/UTC /etc/localtime
-
-dpkg-reconfigure --frontend noninteractive tzdata 
+dpkg-reconfigure --frontend noninteractive tzdata
 
 fc-cache
 
@@ -29,9 +27,15 @@ if [[ $# -eq 0 ]]; then
     python3 manage.py migrate
 
     echo "Starting Gunicorn"
-	
-#	For using docker in development settings, add `--reload` option below to the execution line of gunicorn
-    exec /usr/local/bin/gunicorn Translation.wsgi:application -w "${GUNICORN_WORKERS:-1}" -b :9000
+
+    if [ ! -v GUNICORN_OPTIONS ] ; then
+        if [ "${TRANS_DEBUG:-0}" = 1 ] ; then
+            GUNICORN_OPTIONS=--reload
+        else
+            GUNICORN_OPTIONS=--preload
+        fi
+    fi
+    exec gunicorn Translation.wsgi:application -w "${GUNICORN_WORKERS:-1}" -b :9000 $GUNICORN_OPTIONS
 fi
 
 exec "$@"

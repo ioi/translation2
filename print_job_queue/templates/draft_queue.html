@@ -26,7 +26,7 @@
           <th>ID</th>
           <th>Country</th>
           <th>Files</th>
-          {% if worker_name %} <th>Action</th> {% endif %}
+	  {% if worker_name %} <th>Action</th> {% else %} <th>Printed by</th> {% endif %}
         </thead>
         <tbody>
           {% for job in in_progress_jobs %}
@@ -51,6 +51,8 @@
                 <button>Mark as complete</button>
               </form>
             </td>
+	    {% else %}
+	    <td>{{ job.worker }}</td>
             {% endif %}
           </tr>
           {% endfor %}

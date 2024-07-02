@@ -7,7 +7,7 @@ from django.conf import settings
 import django.contrib.auth.models
 from django.db import migrations, models
 import django.db.models.deletion
-from django.utils.timezone import utc
+from datetime import timezone
 
 
 class Migration(migrations.Migration):
@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                 ('text', models.TextField()),
                 ('release_note', models.CharField(blank=True, max_length=255)),
                 ('released', models.BooleanField(default=False)),
-                ('create_time', models.DateTimeField(default=datetime.datetime(2017, 5, 4, 12, 33, 23, 165589, tzinfo=utc))),
+                ('create_time', models.DateTimeField(default=datetime.datetime(2017, 5, 4, 12, 33, 23, 165589, tzinfo=timezone.utc))),
                 ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.ContentType')),
             ],
         ),
@@ -124,7 +124,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('text', models.TextField(default=None)),
-                ('create_time', models.DateTimeField(default=datetime.datetime(2017, 5, 4, 12, 33, 23, 169294, tzinfo=utc))),
+                ('create_time', models.DateTimeField(default=datetime.datetime(2017, 5, 4, 12, 33, 23, 169294, tzinfo=timezone.utc))),
                 ('translation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trans.Translation')),
             ],
         ),

@@ -92,6 +92,18 @@
                       <i class="fa fa-btn fa-print fa-lg"></i>
                     </button>
                   {% endif %}
+		  {% if task.is_editing %}
+                    <form method="post" action="{% url 'unleash_edit_token' id=task.trans_id %}" style="display: inline">
+                      {% csrf_token %}
+		      <button
+			type="submit"
+			class="btn btn-danger"
+			title="Break edit lock">
+			<i class="fa fa-btns fa-bolt fa-lg"></i>
+		      </button>
+                    </form>
+                  {% endif %}
+                </td>
                 </td>
               {% endif %}
               {% if not is_editor and is_translating %}

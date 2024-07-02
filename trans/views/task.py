@@ -2,7 +2,7 @@ from django.http.response import HttpResponseForbidden
 
 from django.shortcuts import render, redirect
 from django.views.generic import View
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseBadRequest
 
 from trans.utils import get_trans_by_user_and_task

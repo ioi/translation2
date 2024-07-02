@@ -27,8 +27,9 @@
     <div class="row">
         <div class="btn-container">
             <button class="btn btn-default" onclick="saveVersion()" title="Save"><i class="fa fa-btn fa-save fa-lg"></i></button>
+	    <button class="btn btn-default" onclick="saveAndGo('{% url 'home' %}')" title="Save and close editor"><i class="fa fa-btn fa-power-off fa-lg"></i></button>
             <button class="btn btn-default" onclick="saveAndGo('{% url 'revisions' 'task' contest_slug task_name %}')" title="History"><i class="fa fa-btn fa-history fa-lg"></i></button>
-            <button class="btn btn-default" onclick="saveAndGo('{% url 'task_pdf' 'task' contest_slug task_name %}')" title="PDF"><i class="fa fa-btn fa-file-pdf-o fa-lg"></i></button>
+            <button class="btn btn-default" onclick="saveAndGo('{% url 'task_pdf' 'task' contest_slug task_name %}', true)" title="PDF"><i class="fa fa-btn fa-file-pdf-o fa-lg"></i></button>
             {% if has_contestants %}
             <button onclick="autoSave(); sendPrint('{% url 'task_print' 'task' contest_slug task_name %}')" class="btn btn-default" title="Print a copy"><i class="fa fa-btn fa-print fa-lg"></i></button>
             {% endif %}
@@ -72,6 +73,7 @@
 {% block script %}
 
 <script type="text/javascript">
+    release_task_url = "{% url 'release_task' contest_slug=contest_slug task_name=task_name %}";
     task_id = "{{taskID}}";
     home_page_url = "{% url 'firstpage' %}";
     access_edit_translate_url = "{% url 'access_edit_translate' id=taskID %}";

@@ -7,18 +7,23 @@ var latest_translation_text;
 var simplemde;
 var left_plain_text_box_id;
 var direction, language;
-var last_autosaved_text;
+var last_saved_text;
 var previewInterval;
 var spellChecking = false;
+var initialized = false;
 
 // Settings
 var markdown_render_interval = 100;
 var autosave_interval = 30 * 1000;
 var update_token_interval = 60 * 1000;
 
+function transLog(msg){
+    console.log("Translate: " + msg);
+}
+
 
 $(document).ready(function() {
-
+    transLog("Initializing");
     if (direction=='rtl') {
         left_plain_text_box_id = 'left_rtl_plain_text_box';
         $('#' + left_plain_text_box_id).moratab('', {strings: {help: ''}});
@@ -58,10 +63,12 @@ function initial(){
     task_text = $("#temp").html();
     translation_text = currentTranslationText();
     latest_translation_text = '';
-    last_autosaved_text = currentTranslationText();
+    last_saved_text = currentTranslationText();
     setInterval(autoSave, autosave_interval)
     setInterval(onlinePreview, markdown_render_interval);
     onPreviewClick();
+    initialized = true;
+    transLog("Ready");
 }
 
 function currentTranslationText(){
@@ -109,33 +116,36 @@ function onIscMarkdownClick(){
     switchTab('isc-markdown');
 }
 
-function autoSave(on_unleash=false, callback=null) {
-    saveVersion(true, on_unleash, callback);
+function autoSave() {
+    transLog("Auto-save");
+    saveVersion(true);
 }
 
-function saveAndGo(url) {
-    saveVersion(true, false, function() {
-        window.location.href = url;
+function saveAndGo(url, new_tab=false) {
+    saveVersion(true, function() {
+        if (new_tab) {
+            window.open(url, '_blank').focus();
+        } else {
+            releaseToken(function() { window.location.href = url; });
+        }
     });
 }
 
-
 function setEditToken(edit_token){
     last_time_get_edit_token = new Date();
+    transLog("Edit token " + edit_token);
     sessionStorage.setItem('edit_translate_token_' + task_id, edit_token);
 }
 
-
-function saveVersion(autosave=false, on_unleash=false, callback=null) {
+function saveVersion(autosave=false, callback=null) {
     current_trans_text = currentTranslationText();
-    if (autosave && last_autosaved_text == current_trans_text) {
+    if (autosave && last_saved_text == current_trans_text) {
         if (callback)
             callback();
         return;
     }
     var edit_token = sessionStorage.getItem('edit_translate_token_' + task_id)
     $.ajax({
-        async: !on_unleash,
         url: save_task_url,
         data: {
             content: currentTranslationText(),
@@ -149,7 +159,7 @@ function saveVersion(autosave=false, on_unleash=false, callback=null) {
             if (response.can_edit == false)
                 handleAccessDenied();
             else {
-                last_autosaved_text = current_trans_text;
+                last_saved_text = current_trans_text;
                 setEditToken(response.edit_token)
                 if (callback)
                     callback();
@@ -163,9 +173,8 @@ function saveVersion(autosave=false, on_unleash=false, callback=null) {
 function getEditTranslateAccess(callback) {
     var edit_token = sessionStorage.getItem('edit_translate_token_' + task_id)
     var originalTranslationText = currentTranslationText();
+    transLog("Obtaining edit token");
     $.ajax({
-        // TODO: remove async = false
-//        async: false,
         url: access_edit_translate_url,
         data: {
             id: task_id,
@@ -207,10 +216,10 @@ function getEditTranslateAccess(callback) {
     });
 }
 
-function releaseToken() {
+function releaseToken(callback=null) {
+    transLog("Releasing token");
     var edit_token = sessionStorage.getItem('edit_translate_token_' + task_id)
     $.ajax({
-        async: false,
         url: finish_translation_url,
         data: {
             id: task_id,
@@ -219,6 +228,8 @@ function releaseToken() {
         },
         type: "POST",
         success: function (response) {
+          edit_token = null;
+          if (callback) callback();
         },
         error: function () {
         }
@@ -226,6 +237,7 @@ function releaseToken() {
 };
 
 function handleAccessDenied(message='') {
+    transLog("Edit access denied");
     msg = message || "The task is open somewhere else!"
     bootbox.alert({
         // title: 'Alert',
@@ -245,10 +257,29 @@ function checkIfCanChange(){
         getEditTranslateAccess();
 }
 
-window.onbeforeunload = function(){
-    autoSave(true, releaseToken);
-};
+window.addEventListener("beforeunload", function(e){
+    transLog('About to unload page');
+    if (initialized) {
+        const current_trans_text = currentTranslationText();
+        if (last_saved_text != current_trans_text) {
+            e.returnValue = true;
+            e.preventDefault();
+        }
+    }
+});
 
+window.addEventListener("unload", function(e){
+    transLog('Unloading page');
+    var edit_token = sessionStorage.getItem('edit_translate_token_' + task_id);
+    if (edit_token) {
+        transLog('Sending token release beacon');
+        data = new URLSearchParams();
+        data.append('id', task_id);
+        data.append("edit_token", edit_token);
+        data.append('csrfmiddlewaretoken', csrf_token);
+        navigator.sendBeacon(finish_translation_url, data);
+    }
+});
 
 function onChangeSpellChecking(){
     spellChecking = !spellChecking;
@@ -291,6 +322,7 @@ function release() {
 }
 
 function sendRelease(note) {
+    transLog("Releasing");
     $.ajax({
         url: release_task_url,
         data: {
@@ -301,9 +333,11 @@ function sendRelease(note) {
         success: function (response) {
             last_saved_content = simplemde.value();
             ToastrUtil.success('Task released!');
+            transLog("Release: Success");
         },
         error: function (response) {
             ToastrUtil.error('Release failed.');
+            transLog("Release: Failure");
         }
     });
 }

@@ -10,7 +10,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from trans.models import User, Task, Translation, Version, Contest, Country, FlatPage, UserContest
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 
 import os
@@ -22,7 +22,7 @@ from trans.utils import get_translate_edit_permission, can_save_translate, is_tr
     unleash_edit_token, get_task_by_contest_and_name, get_trans_by_user_and_task, \
     can_user_change_translation, convert_html_to_pdf, add_page_numbers_to_pdf, \
     pdf_response, get_requested_user, build_printed_draft_pdf, render_pdf_template
-from trans.utils.pdf import get_file_name_from_path, build_pdf, merge_final_pdfs
+from trans.utils.pdf import get_file_name_from_path, build_pdf
 from trans.views.admin import FreezeUserContest
 
 from print_job_queue import queue
@@ -199,7 +199,7 @@ class TranslationPrint(TranslationView):
             info_line = 'Release {}, deliver to {}'.format(translation.get_published_versions_count(), user.country.code)
         else:
             #info_line = 'Printed at {}'.format(translation.get_latest_version().create_time.strftime("%H:%M"))
-            info_line = 'Printed at {}'.format(datetime.datetime.now().strftime("%H:%M"))
+            info_line = 'Draft printed at {}'.format(datetime.datetime.now().strftime("%H:%M"))
         output_pdf_path = build_printed_draft_pdf(contest_slug, pdf_file_path, info_line)
 
         queue.enqueue_draft_print_job(output_pdf_path,
@@ -281,7 +281,7 @@ class Versions(LoginRequiredMixin, View):
 
         direction = 'rtl' if user.language.rtl else 'ltr'
         # versions_values = versions.values('id', 'text', 'create_time', 'release_note')
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse(dict(versions=list(versions_list)))
         return render(request, 'revisions.html', context={
             'task_name': task.name,
@@ -290,7 +290,8 @@ class Versions(LoginRequiredMixin, View):
             'versions': versions_list,
             'direction': direction,
             'task_type': task_type,
-            'view_all': view_all
+            'view_all': view_all,
+            'is_editor': user.is_editor(),
         })
 
 

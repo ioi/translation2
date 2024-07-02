@@ -379,7 +379,7 @@ class SealUserContest(LoginRequiredMixin, View):
             user_contest.save()
         return redirect(request.META.get('HTTP_REFERER'))
 
-class UnleashEditTranslationToken(StaffCheckMixin, View):
+class UnleashEditTranslationToken(LoginRequiredMixin, View):
     def post(self, request, id):
         trans = Translation.objects.get(id=id)
         if trans is None:
