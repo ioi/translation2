@@ -35,6 +35,8 @@ class CustomUserResource(ModelResource):
         fields = ('username', 'country', 'language', 'raw_password', 'is_onsite', 'is_translating')
         import_id_fields = ('username',)
 
+class ContestantInline(admin.TabularInline):
+    model = Contestant
 
 @admin.register(User)
 class CustomUserAdmin(ImportExportMixin, UserAdmin):
@@ -57,6 +59,8 @@ class CustomUserAdmin(ImportExportMixin, UserAdmin):
         )
 
     filter_horizontal = ()
+
+    inlines = (ContestantInline, )
 
     def translate_versions(self, obj):
         return mark_safe('<a href="%s">%s</a>' % (reverse('user_trans', kwargs={'username': obj.username}), 'Translations'))
