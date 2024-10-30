@@ -41,7 +41,7 @@ services:
 
   postgres:
     restart: always
-    image: postgres:9.6-alpine
+    image: postgres:15-alpine
     volumes:
     - ioi_pgdata:/var/lib/postgresql/data/
     environment:
